@@ -2,5 +2,6 @@ __pycache__/
 *.pyc
 .DS_Store
 *.html
-*.png
+# output PNGs only, not data assets
+output/*.png
 output/
