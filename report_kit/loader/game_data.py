@@ -3,6 +3,25 @@ import os
 from dataclasses import dataclass, field
 
 from ..schema import TeamConfig, MatchConfig
+
+# K8 扩展 v2 字段映射：新中文名 → 旧英文名
+_FIELD_MAP = {
+    '球队名称': 'teamName', '球队ID': 'teamId',
+    '球员姓名': 'playerName', '球员英文名': 'playerEnName',
+    '球员ID': 'playerId', '球衣号': 'number', '位置': 'position',
+    '身高': 'height', '年龄': 'age',
+    '赛事名称': 'leagueEvent', '赛事ID': 'leagueEventId',
+    '年份': 'year', '赛季': 'season', '赛季ID': 'seasonId',
+}
+
+
+def _normalize_row(row: dict) -> dict:
+    """将K8 v2中文字段名映射为v1英文字段名，保持兼容。"""
+    out = dict(row)
+    for cn, en in _FIELD_MAP.items():
+        if cn in row and en not in row:
+            out[en] = row[cn]
+    return out
 from .scanner import scan_data_dir, FileManifest
 from .csv_loader import load_csv, safe_float, safe_int, filter_rows, filter_by_year
 from .json_loader import load_json, extract_shots
@@ -180,7 +199,7 @@ def load_game_data(config: TeamConfig) -> GameData:
     # 尝试找组合赛事的球员数据（如"世界杯资格赛_欧洲杯"）
     basic_path = _find_best_csv(manifest.player_basic, primary_event.label_short)
     if basic_path:
-        rows = load_csv(basic_path)
+        rows = [_normalize_row(r) for r in load_csv(basic_path)]
         data.players_primary = _parse_players(rows, config.team_name,
                                                primary_event.label_short, primary_event.year)
         data.starter_numbers = _find_starters(rows, config.team_name,
@@ -197,14 +216,14 @@ def load_game_data(config: TeamConfig) -> GameData:
                     bl_path = path
                     break
         if bl_path:
-            rows = load_csv(bl_path)
+            rows = [_normalize_row(r) for r in load_csv(bl_path)]
             data.players_baseline = _parse_players(rows, config.team_name,
                                                     baseline_event.label_short, baseline_event.year)
 
     # 5. 加载进攻方式
     pt_path = _find_best_csv(manifest.team_playtype, primary_event.label_short)
     if pt_path:
-        rows = load_csv(pt_path)
+        rows = [_normalize_row(r) for r in load_csv(pt_path)]
         data.playtypes_primary = _parse_playtypes(rows, primary_event.year)
 
     if baseline_event:
@@ -215,18 +234,18 @@ def load_game_data(config: TeamConfig) -> GameData:
                     bl_pt_path = path
                     break
         if bl_pt_path:
-            rows = load_csv(bl_pt_path)
+            rows = [_normalize_row(r) for r in load_csv(bl_pt_path)]
             data.playtypes_baseline = _parse_playtypes(rows, baseline_event.year)
 
     # 6. 加载On/Off数据
     onoff_path = _find_best_csv(manifest.player_onoff, primary_event.label_short)
     if onoff_path:
-        data.onoff_rows = load_csv(onoff_path)
+        data.onoff_rows = [_normalize_row(r) for r in load_csv(onoff_path)]
 
     # 7. 加载防守数据
     def_path = _find_best_csv(manifest.player_defense, primary_event.label_short)
     if def_path:
-        data.defense_data = load_csv(def_path)
+        data.defense_data = [_normalize_row(r) for r in load_csv(def_path)]
 
     # 8. 从config的player_overrides填充scouting_note
     for p in data.players_primary:
