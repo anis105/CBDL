@@ -52,6 +52,9 @@ class TeamConfig:
     report_title: str = ""  # 自动生成: "{team_name} 世预赛球探报告"
     attribution: str = "数据来源：中国篮协技战术服务平台 cbastats.com"
 
+    # Report mode: 'opponent' (default) or 'self'
+    report_mode: str = 'opponent'
+
     # Section selection
     sections: list[int] = field(default_factory=lambda: list(range(1, 11)))
 

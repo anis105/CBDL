@@ -1,0 +1,26 @@
+# 清华大学女篮 — 赛前自我评估报告
+# 用同一套report_kit，数据视角是自己
+
+team_name: 清华大学
+team_name_en: Tsinghua University
+team_id: "1003320453"
+flag_emoji: "🏫"
+accent_color: "#660874"
+report_title: 清华大学 CUBAL自我评估报告
+report_mode: self
+data_dir: /Users/joey/Downloads/CBDL/清华大学
+report_date: "2026-03-19"
+
+events:
+  - label: CUBAL一级联赛5场
+    label_short: CUBAL一级联赛
+    year: 2024
+    is_primary: true
+    league_event_id: 20005
+
+matches:
+  - opponent: 北京大学
+    score: "66-79"
+    result: loss
+    json_file: 清华大学vs北京大学_比赛数据_2026-03-19.json
+    team_side: home

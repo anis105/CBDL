@@ -1,0 +1,22 @@
+﻿teamId,teamName,playerId,playerName,enAlias,enName,leagueLevel,number,height,weight,nationality,age,sex,birthdate,nationRegion,season,seasonId,seasonYear,position,wingspan,handLength,handWidth,standingReach,verticalReach,maxVerticalReach,isValid,hasPhysicalExamReport,physicalExamYear,时间段
+1003320453,,40730,李嘉琳,,Li Jialin,,2,178,65,中国,,2,2005-05-18,,,200406,,SF,,,,,,,1,,,homeTeamPlayerList
+1003320453,,32072,吴语桐,,Wu Yutong,,4,173,75,中国,,2,2004-01-09,,,200406,,SG,,,,,,,1,,,homeTeamPlayerList
+1003320453,,32064,王小青,,Wang Xiaoqing,,5,170,68,中国,,2,2002-04-10,,,200406,,PG,,,,,,,1,,,homeTeamPlayerList
+1003320453,,92064,刘琦,,Liu Qi,,6,189,80,中国,,2,2004-01-09,,,200406,,PF,,,,,,,1,,,homeTeamPlayerList
+1003320453,,80514,王镘淋,,Wang Manlin,,9,175,72,中国,,2,2003-10-23,,,200406,,PG,,,,,,,1,,,homeTeamPlayerList
+1003320453,,32071,张涛,,Zhang Tao,,11,184,84,中国,,2,2003-04-03,,,200406,,PF,,,,,,,1,,,homeTeamPlayerList
+1003320453,,88706,孙楷文,,Sun Kaiwen,,15,197,96,中国,,2,2006-11-25,,,200406,,C,,,,,,,1,,,homeTeamPlayerList
+1003320453,,32067,高梓悦,,Gao Ziyue,,16,199,80,中国,,2,2003-08-17,,,200406,,C,,,,,,,1,,,homeTeamPlayerList
+1003320453,,93035,李瑜婧,,Li Yujing,,21,177,74,中国,,2,2003-10-30,,,200406,,SF,,,,,,,1,,,homeTeamPlayerList
+1003320449,,76061,赵婧涵,,Zhao Jinghan,,1,185,73,中国,,2,2006-03-18,,,200406,,PF,,,,,,,1,,,awayTeamPlayerList
+1003320449,,30097,钱媛媛,,Qian Yuanyuan,,3,165,60,中国,,2,2006-02-01,,,200406,,PG,,,,,,,1,,,awayTeamPlayerList
+1003320449,,31999,贾晋文,,Jia Jinwen,,4,192,93,中国,,2,2004-02-19,,,200406,,C,,,,,,,1,,,awayTeamPlayerList
+1003320449,,30230,安恒瑶,,An Hengyao,,6,190,115,中国,,2,2005-10-28,,,200406,,C,,,,,,,1,,,awayTeamPlayerList
+1003320449,,80548,罗巧梅,,Luo Qiaomei,,7,173,68,中国,,2,2003-07-12,,,200406,,PG,,,,,,,1,,,awayTeamPlayerList
+1003320449,,32001,王乔睿,,Wang Qiaorui,,9,178,75,中国,,2,2004-09-28,,,200406,,SG,,,,,,,1,,,awayTeamPlayerList
+1003320449,,80550,伍湘琳,,Wu Xianglin,,10,173,75,中国,,2,2002-01-20,,,200406,,PG,,,,,,,1,,,awayTeamPlayerList
+1003320449,,32005,王家绘,,Wang Jiahui,,11,183,80,中国,,2,2002-06-19,,,200406,,SF,,,,,,,1,,,awayTeamPlayerList
+1003320449,,32006,李美潼,,Li Meitong,,13,186,78,中国,,2,2002-05-17,,,200406,,PF,,,,,,,1,,,awayTeamPlayerList
+1003320449,,32013,王雨桐,,Wang Yutong,,16,183,130,中国,,2,2004-03-09,,,200406,,C,,,,,,,1,,,awayTeamPlayerList
+1003320449,,80546,陈怡静,,Chen Yijing,,21,187,76,中国,,2,2003-01-17,,,200406,,PF,,,,,,,1,,,awayTeamPlayerList
+1003320449,,32012,李若莹,,Li Ruoying,,31,186,70,中国,,2,2003-01-31,,,200406,,SG,,,,,,,1,,,awayTeamPlayerList

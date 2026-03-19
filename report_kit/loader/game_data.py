@@ -6,7 +6,8 @@ from ..schema import TeamConfig, MatchConfig
 from .scanner import scan_data_dir, FileManifest
 from .csv_loader import load_csv, safe_float, safe_int, filter_rows, filter_by_year
 from .json_loader import load_json, extract_shots
-from .headshot import load_headshots_json, load_shotcharts_json
+from .headshot import (load_headshots_json, load_shotcharts_json,
+                       load_headshots_dir, load_shotcharts_dir)
 from ..i18n import PLAYTYPE_CN
 
 
@@ -131,27 +132,35 @@ def load_game_data(config: TeamConfig) -> GameData:
     manifest = scan_data_dir(config.data_dir, config.team_name)
     data.manifest = manifest
 
-    # 2. 加载头像
+    # 2. 加载头像 (JSON > PNG目录 > config fallback)
     if manifest.headshot_json:
         data.headshots = load_headshots_json(manifest.headshot_json)
-    elif config.headshot_source:
-        hs_path = os.path.join(config.data_dir, config.headshot_source)
-        if os.path.exists(hs_path):
-            data.headshots = load_headshots_json(hs_path)
+    else:
+        hs_dir = os.path.join(config.data_dir, '头像')
+        if os.path.isdir(hs_dir):
+            data.headshots = load_headshots_dir(hs_dir)
+        elif config.headshot_source:
+            hs_path = os.path.join(config.data_dir, config.headshot_source)
+            if os.path.exists(hs_path):
+                data.headshots = load_headshots_json(hs_path)
 
     # 加载备用头像（baseline event）
     baseline = config.baseline_event
     if baseline:
         for suffix in [f'_headshots_{baseline.label_short}_b64.json',
-                       f'_headshots_euro_b64.json', '_headshots_baseline_b64.json']:
+                       f'_headshots_baseline_b64.json']:
             bl_path = os.path.join(config.data_dir, suffix)
             if os.path.exists(bl_path):
                 data.headshots_baseline = load_headshots_json(bl_path)
                 break
 
-    # 加载投篮图
+    # 加载投篮图 (JSON > PNG目录)
     if manifest.shotchart_json:
         data.shotcharts = load_shotcharts_json(manifest.shotchart_json)
+    else:
+        sc_dir = os.path.join(config.data_dir, '投篮图')
+        if os.path.isdir(sc_dir):
+            data.shotcharts = load_shotcharts_dir(sc_dir)
 
     # 3. 加载比赛数据
     for match_cfg in config.matches:
@@ -255,6 +264,10 @@ def _parse_players(rows: list[dict], team_name: str, league_name: str, year: int
             continue
         rln = row.get('_leagueName', '') or row.get('leagueEvent', '')
         if not _league_match(league_name, rln):
+            continue
+        # year 过滤
+        row_year = str(row.get('year', '')).strip()
+        if year and row_year and row_year != str(year):
             continue
 
         num = row.get('number', '').strip()

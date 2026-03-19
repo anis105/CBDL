@@ -1,0 +1,31 @@
+# 北京大学女篮 — 赛前球探报告（清华大学视角）
+# 数据源：北大CUBAL一级联赛赛季数据 + 清华vs北大/北师大vs北大比赛数据
+
+team_name: 北京大学
+team_name_en: Peking University
+team_id: "1003320449"
+flag_emoji: "🏫"
+accent_color: "#8b0000"
+report_title: 北京大学 CUBAL赛前球探报告
+data_dir: /Users/joey/Downloads/CBDL/北京大学
+report_date: "2026-03-19"
+
+events:
+  - label: CUBAL一级联赛
+    label_short: CUBAL一级联赛
+    year: 2024
+    is_primary: true
+    league_event_id: 20005
+
+matches:
+  - opponent: 清华大学
+    score: "79-66"
+    result: win
+    json_file: 清华大学vs北京大学_比赛数据_2026-03-19.json
+    team_side: away
+
+  - opponent: 北京师范大学
+    score: ""
+    result: ""
+    json_file: 北京师范大学vs北京大学_比赛数据_2026-03-19.json
+    team_side: away

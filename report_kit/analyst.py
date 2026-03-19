@@ -95,23 +95,57 @@ def _analyze_section1(data: GameData) -> str:
     avg_3pct = (sum(p.three_pct * p.three_att for p in players) /
                 max(total_3att, 1)) * 100
 
+    is_self = getattr(cfg, 'report_mode', 'opponent') == 'self'
+
     parts = []
     record = f'{n_matches}场（{wins}胜{losses}负）' if n_matches > 0 else ''
-    parts.append(f'{cfg.team_name}是{team_type}。{cfg.primary_event.label_short}{record}。')
 
-    # 投篮结构
-    parts.append(
-        f'投篮结构上，三分出手占比{pct_3:.0f}%，篮下占比{pct_rim:.0f}%，中距离占比{100-pct_3-pct_rim:.0f}%。'
-        f'三分整体命中率{avg_3pct:.1f}%。'
-    )
+    if is_self:
+        # 自我评估模式：强调优劣势
+        parts.append(f'我队（{cfg.team_name}）{cfg.primary_event.label_short}{record}。')
+        parts.append(
+            f'投篮结构：三分出手占比{pct_3:.0f}%，篮下占比{pct_rim:.0f}%，中距离占比{100-pct_3-pct_rim:.0f}%。'
+            f'三分整体命中率{avg_3pct:.1f}%。'
+        )
+        # 自检：找效率短板
+        weaknesses = []
+        if avg_3pct < 30:
+            weaknesses.append(f'三分命中率偏低（{avg_3pct:.1f}%），对手可能收缩内线')
+        mid_pct = sum(p.mid_pct * p.mid_att for p in players) / max(total_mid, 1)
+        if mid_pct < 35:
+            weaknesses.append(f'中距离效率不足（{mid_pct:.0f}%）')
+        high_to = [p for p in players if p.mpg >= 15 and p.topg >= 3]
+        if high_to:
+            names = '、'.join(f'#{p.number}{_pname(p)}' for p in high_to[:3])
+            weaknesses.append(f'{names}失误偏多，对手可能施压')
+        if weaknesses:
+            parts.append('需关注的短板：' + '；'.join(weaknesses) + '。')
+        # 核心优势
+        strengths = []
+        if avg_3pct >= 35:
+            strengths.append(f'三分投射效率高（{avg_3pct:.1f}%）')
+        top_rim = [p for p in players if p.rim_pct >= 55 and p.rim_att >= 3]
+        if top_rim:
+            names = '、'.join(f'#{p.number}' for p in top_rim[:3])
+            strengths.append(f'篮下终结点充足（{names}）')
+        if strengths:
+            parts.append('核心优势：' + '；'.join(strengths) + '。')
+    else:
+        # 对手报告模式（原有）
+        parts.append(f'{cfg.team_name}是{team_type}。{cfg.primary_event.label_short}{record}。')
+        parts.append(
+            f'投篮结构上，三分出手占比{pct_3:.0f}%，篮下占比{pct_rim:.0f}%，中距离占比{100-pct_3-pct_rim:.0f}%。'
+            f'三分整体命中率{avg_3pct:.1f}%。'
+        )
 
-    # 进攻效率最高/最低的球员
+    # 进攻核心
     scorers = sorted([p for p in players if p.mpg >= 10], key=lambda x: x.ppg, reverse=True)
     if scorers:
         top = scorers[0]
-        parts.append(
-            f'进攻端#{top.number} {_pname(top)}场均{top.ppg:.1f}分领跑全队。'
-        )
+        if is_self:
+            parts.append(f'进攻核心#{top.number} {_pname(top)}场均{top.ppg:.1f}分。')
+        else:
+            parts.append(f'进攻端#{top.number} {_pname(top)}场均{top.ppg:.1f}分领跑全队。')
 
     return ''.join(parts)
 
@@ -375,7 +409,11 @@ def _analyze_section10(data: GameData) -> str:
     if not players:
         return f'基于{cfg.team_name}的进攻特点和数据分析，防守策略待分析师填写。'
 
-    parts = [f'基于{cfg.team_name}的进攻特点和数据分析，以下为防守端资源配置参考：<br><br>']
+    is_self = getattr(cfg, 'report_mode', 'opponent') == 'self'
+    if is_self:
+        parts = [f'<b>反向思维：</b>如果对手教练拿到我队数据，以下是对手可能的防守策略。我队需提前准备应对方案：<br><br>']
+    else:
+        parts = [f'基于{cfg.team_name}的进攻特点和数据分析，以下为防守端资源配置参考：<br><br>']
 
     priority = 1
 
