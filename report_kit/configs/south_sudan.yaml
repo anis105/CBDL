@@ -1,0 +1,52 @@
+# 南苏丹女篮球探报告配置
+team_name: 南苏丹
+team_name_en: South Sudan
+team_id: "2010426419"
+flag_emoji: "🇸🇸"
+accent_color: "#c1272d"          # 南苏丹国旗红
+
+data_dir: /Users/joey/Desktop/wcq/ssd/south_sudan
+# headshot_source: _headshots_b64.json  # 暂无头像
+
+events:
+  - label: 非洲杯
+    label_short: 非洲杯
+    year: 2025
+    is_primary: true
+
+matches:
+  - opponent: 喀麦隆
+    score: "63-70"
+    result: loss
+    json_file: 南苏丹vs喀麦隆_比赛数据_2026-03-13.json
+    team_side: home
+  - opponent: 巴西
+    score: "79-94"
+    result: loss
+    json_file: 南苏丹vs巴西_比赛数据_2026-03-13.json
+    team_side: home
+  - opponent: 乌干达
+    score: "69-68"
+    result: win
+    json_file: 乌干达vs南苏丹_比赛数据_2026-03-13.json
+    team_side: away
+  - opponent: 塞内加尔
+    score: "66-65"
+    result: win
+    json_file: 塞内加尔vs南苏丹_比赛数据_2026-03-13.json
+    team_side: away
+  - opponent: 捷克
+    score: "52-89"
+    result: loss
+    json_file: 捷克vs南苏丹_比赛数据_2026-03-13.json
+    team_side: away
+  - opponent: 马里
+    score: "50-76"
+    result: loss
+    json_file: 马里vs南苏丹_比赛数据_2026-03-13.json
+    team_side: away
+
+report_title: 南苏丹女篮球探报告
+report_date: "2026-03-18"
+attribution: "数据来源：中国篮协技战术服务平台 cbastats.com"
+sections: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
