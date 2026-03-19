@@ -40,8 +40,8 @@ def _build_card(p: PlayerData, is_starter: bool, headshots: dict, shotcharts: di
 
     # 投篮图PNG
     shot_charts_html = ''
-    sc_keys = [f"{hs_key}_欧洲杯", f"{hs_key}_世界杯资格赛"]
-    found = [(k.split('_', 1)[1], shotcharts[k]) for k in sc_keys if k in shotcharts]
+    sc_keys = sorted([k for k in shotcharts if k.startswith(f"{hs_key}_")])
+    found = [(k.split('_', 1)[1], shotcharts[k]) for k in sc_keys]
     if found:
         shot_charts_html = '<div style="margin-top:8px;border-top:1px solid #e2e6ea;padding-top:8px">'
         shot_charts_html += '<div style="font-size:10px;color:#95a0ab;margin-bottom:4px">中国篮协技战术服务平台 · 投篮点图</div>'
