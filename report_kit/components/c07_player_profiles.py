@@ -54,7 +54,7 @@ def _build_card(p: PlayerData, is_starter: bool, headshots: dict, shotcharts: di
 
     return f'''<div class="pc{st_class}">
     <div class="pc-h" style="display:flex;align-items:center">
-      {hs_img}<div style="flex:1"><div class="pc-nm">#{p.number} {p.name}</div><div class="pc-mt">{_pos_short(p.position)} · {p.height}cm · {p.age}岁</div></div>
+      {hs_img}<div style="flex:1"><div class="pc-nm">#{p.number} {p.cn_name or p.name}</div><div class="pc-mt">{_pos_short(p.position)} · {p.height}cm · {p.age}岁</div></div>
       <div style="text-align:right"><div class="pc-pt">{p.ppg:.1f}</div><div class="pc-ps">分/场</div></div>
     </div>
     <div class="pc-bd">

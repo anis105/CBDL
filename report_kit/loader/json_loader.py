@@ -16,10 +16,13 @@ def extract_shots(match_json: dict, team_side: str) -> list[dict]:
     pbpType大写M=命中，小写m=未中
     """
     key = 'homeShoots' if team_side == 'home' else 'awayShoots'
+    # v2 format: teamData.gameShotPlot.full.{key}
     try:
         return match_json['teamData']['gameShotPlot']['full'][key]
     except (KeyError, TypeError):
-        return []
+        pass
+    # v1 format: top-level {key}
+    return match_json.get(key, [])
 
 
 def extract_quarter_scores(match_json: dict, focus_team: str, opponent_team: str) -> list[tuple]:

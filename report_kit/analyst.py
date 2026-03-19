@@ -17,6 +17,13 @@ from .loader.game_data import GameData, PlayerData, PlayTypeData
 from .theme import threat_level
 
 
+def _pname(p: PlayerData) -> str:
+    """球员显示名：优先中文名，无则取英文姓。"""
+    if p.cn_name:
+        return p.cn_name
+    return p.name.split()[-1] if ' ' in p.name else p.name
+
+
 # ── 评价词库 ──────────────────────────────────────────
 
 def _trend_word(delta: float) -> str:
@@ -103,7 +110,7 @@ def _analyze_section1(data: GameData) -> str:
     if scorers:
         top = scorers[0]
         parts.append(
-            f'进攻端#{top.number} {top.name}场均{top.ppg:.1f}分领跑全队。'
+            f'进攻端#{top.number} {_pname(top)}场均{top.ppg:.1f}分领跑全队。'
         )
 
     return ''.join(parts)
@@ -173,7 +180,7 @@ def _analyze_section2(data: GameData) -> str:
     if rim_stars:
         top = rim_stars[0]
         parts.append(
-            f'篮下终结效率最高的是#{top.number} {top.name}'
+            f'篮下终结效率最高的是#{top.number} {_pname(top)}'
             f'（{top.rim_pct:.0f}%，场均{top.rim_att:.1f}次出手）。'
         )
 
@@ -334,7 +341,7 @@ def _analyze_section9(data: GameData) -> str:
 
     if red:
         for p in red:
-            short = p.name.split()[-1] if ' ' in p.name else p.name
+            short = _pname(p)
             per36 = p.three_att_per36
             parts.append(
                 f'<b>#{p.number} {short}</b>（{p.three_pct*100:.1f}%，每36分钟{per36:.1f}次出手）'
@@ -390,7 +397,7 @@ def _analyze_section10(data: GameData) -> str:
         key=lambda x: x.three_att, reverse=True
     )
     for p in red_shooters:
-        short = p.name.split()[-1] if ' ' in p.name else p.name
+        short = _pname(p)
         parts.append(
             f'<b>{priority}. #{p.number} {short}｜外线优先关注对象</b>：'
             f'场均{p.ppg:.1f}分，三分{p.three_pct*100:.1f}%'
@@ -457,10 +464,88 @@ _ANALYZERS = {
 }
 
 
+def _scout_tag(p: PlayerData) -> str:
+    """为单个球员生成一句话球探标签。
+
+    参考NBA官方球探报告风格：定性角色定位 + 关键数据锚点。
+    语气平和、专业，避免绝对判断。
+    """
+    tags = []
+    role = ''
+
+    # ── 角色定位 ──
+    ppg = p.ppg
+    games = p.games if hasattr(p, 'games') else 0
+    minutes = p.minutes if hasattr(p, 'minutes') else 0
+
+    # 得分角色
+    if ppg >= 15:
+        role = '核心得分手'
+    elif ppg >= 10:
+        role = '重要轮换得分点'
+    elif ppg >= 5:
+        role = '角色球员'
+    else:
+        role = '功能型球员'
+
+    # ── 进攻特点 ──
+    # 投篮结构
+    total_att = p.rim_att + p.mid_att + p.three_att
+    if total_att > 0:
+        rim_ratio = p.rim_att / total_att
+        three_ratio = p.three_att / total_att
+
+        if rim_ratio >= 0.5 and p.rim_pct >= 50:
+            tags.append(f'篮下终结突出（{p.rim_pct:.0f}%）')
+        elif rim_ratio >= 0.4:
+            tags.append('偏内线进攻')
+
+        if three_ratio >= 0.4:
+            if p.three_pct >= 0.35:
+                tags.append(f'外线投射稳定（三分{p.three_pct*100:.0f}%，{p.three_att:.1f}次）')
+            elif p.three_pct >= 0.25:
+                tags.append(f'有三分射程但效率一般（{p.three_pct*100:.0f}%，{p.three_att:.1f}次）')
+            else:
+                tags.append(f'三分出手多但效率偏低（{p.three_pct*100:.0f}%，{p.three_att:.1f}次）')
+        elif p.three_att >= 2 and p.three_pct >= 0.35:
+            tags.append(f'三分威胁需关注（{p.three_pct*100:.0f}%）')
+
+        if p.mid_att >= 3 and p.mid_pct >= 40:
+            tags.append(f'中距离稳定（{p.mid_pct:.0f}%）')
+
+    # 组织能力 (通过助攻判断)
+    apg = p.apg if hasattr(p, 'apg') else 0
+    if apg >= 4:
+        tags.append(f'组织能力突出（{apg:.1f}助攻）')
+    elif apg >= 2.5:
+        tags.append('兼具一定组织能力')
+
+    # 篮板
+    rpg = p.rpg if hasattr(p, 'rpg') else 0
+    if rpg >= 8:
+        tags.append(f'篮板控制力强（{rpg:.1f}篮板）')
+    elif rpg >= 5:
+        tags.append(f'篮板贡献稳定（{rpg:.1f}）')
+
+    # ── 三分威胁分级 ──
+    tl = threat_level(p.three_pct, p.three_att)
+    if tl[0] == '🔴':
+        tags.append('外线不可放空')
+    elif tl[0] == '🟢' and p.three_att >= 1:
+        tags.append('外线可适度收缩')
+
+    # ── 组装 ──
+    if not tags:
+        return f'{role}，数据样本有限，需进一步观察。'
+
+    return f'{role}，{"，".join(tags)}。'
+
+
 def generate_all_analysis(data: GameData) -> dict[str, str]:
     """为所有模块生成分析文本。
 
     Returns: {'_section1_text': '...', '_section3_text': '...', ...}
+    同时为每个球员生成球探标签（key: 球衣号码）
     """
     results = {}
     for key, analyzer in _ANALYZERS.items():
@@ -468,4 +553,15 @@ def generate_all_analysis(data: GameData) -> dict[str, str]:
             results[key] = analyzer(data)
         except Exception as e:
             results[key] = f'（分析文本自动生成失败：{e}）'
+
+    # 球员球探标签
+    for p in data.players_primary:
+        num_key = p.number
+        if num_key not in results and num_key not in (data.config.player_overrides or {}):
+            try:
+                tag = _scout_tag(p)
+                results[num_key] = {'scouting_note': tag}
+            except Exception:
+                pass
+
     return results

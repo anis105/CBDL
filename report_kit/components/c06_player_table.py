@@ -27,7 +27,8 @@ def _player_row(p: PlayerData, is_starter: bool, headshots: dict, max_ppg: float
     row_class = ' class="hg"' if is_starter or p.ppg >= 9 else ''
     bar_w = p.ppg / max_ppg * 100 if max_ppg > 0 else 0
 
-    short_name = p.name.split()[-1] if ' ' in p.name else p.name
+    display_name = p.cn_name or p.name
+    short_name = display_name.split()[-1] if ' ' in display_name else display_name
 
     return (f'<tr{row_class}><td>{hs_img}{starter_mark}#{p.number} {short_name}</td>'
             f'<td>{_pos_short(p.position)}</td>'

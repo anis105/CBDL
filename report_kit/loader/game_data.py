@@ -43,7 +43,8 @@ class PlayerData:
     """球员数据（从CSV汇总）。"""
     number: str
     name: str
-    position: str
+    cn_name: str = ''
+    position: str = ''
     height: str = ''
     age: str = ''
     ppg: float = 0
@@ -263,6 +264,7 @@ def _parse_players(rows: list[dict], team_name: str, league_name: str, year: int
         players.append(PlayerData(
             number=num,
             name=row.get('playerEnName', row.get('playerName', '')),
+            cn_name=row.get('playerName', ''),
             position=row.get('position', row.get('positionCn', '')),
             height=str(row.get('height', '')),
             age=str(row.get('age', '')),
